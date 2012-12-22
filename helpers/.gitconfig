@@ -1,0 +1,10 @@
+[color]
+	ui = auto
+[alias]
+	aa = add --all
+	st = status
+	ci = commit -m
+	br = branch
+	co = checkout
+	df = diff --color-words
+	lg = log --graph --all --decorate

@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-require_relative 'helpers/Haji_helper'
+require_relative 'helpers/Helper'
 
 begin
-  Ys::Haji_helper.new ARGV
+  Haji::Helper.new ARGV
 rescue Exception => e
   puts "\n\nInterupted!"
 end

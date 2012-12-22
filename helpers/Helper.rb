@@ -1,9 +1,10 @@
 # This program is intended to help to speed up some common system level management tasks.
 # Nov 2012 ys
-module Ys
-  class Haji_helper
-
+module Haji
+  class Helper
     def initialize(args)
+      @user = "saya"
+
       args = args.map { |e| e = e.gsub '-', '_' }
 
       case args.length
@@ -34,9 +35,9 @@ module Ys
       puts
 
       puts 'DETAILS'
-      ms.each { |m| puts metod_reflect(m) }
+      ms.each { |m| puts metod_reflect(m), '' }
 
-      puts '', "For more detail, please see the source code of file '#{__FILE__}'."
+      puts "For more detail, please see the source code of file '#{__FILE__}'."
     end
 
     # Add a public key to the 'authorized_keys' file.
@@ -75,7 +76,7 @@ module Ys
         dir = $stdin.gets.chomp
       end
       dir = File.expand_path dir
-      `rm /home/saya/cradle/www && ln -s '#{dir}' /home/saya/cradle/www`
+      `rm /home/#{@user}/cradle/www && ln -s '#{dir}' /home/#{@user}/cradle/www`
     end
 
     # Clean the system temp files and history cache.
@@ -89,27 +90,44 @@ module Ys
         FileUtils.rm_rf(dir + f)
       }
 
-      dir = '/home/saya/'
+      dir = "/home/#{@user}/"
       list.each { |f|
         FileUtils.rm_rf(dir + f)
       }
       # Remove all cache files.
-      `find #{dir} -name '._*' -exec rm {} \\;`
-      `find #{dir} -name '.DS_Store' -exec rm {} \\;`
+      `sudo find #{dir} -name '._*' -exec sudo rm {} \\;`
+      `sudo find #{dir} -name '.DS_Store' -exec sudo rm {} \\;`
 
       # Remove logs
-      `find /var/log -iname '*.log' -exec rm {} \\;`
-      `find /var/log -iname '*.log.*' -exec rm {} \\;`
-      `find /var/log -iname 'log.*' -exec rm {} \\;`
-      `find /var/log -iname '*.err' -exec rm {} \\;`
+      `sudo find /var/log -iname '*.log' -exec sudo rm {} \\;`
+      `sudo find /var/log -iname '*.log.*' -exec sudo rm {} \\;`
+      `sudo find /var/log -iname 'log.*' -exec sudo rm {} \\;`
+      `sudo find /var/log -iname '*.err' -exec sudo rm {} \\;`
     end
 
+    # Self update tool.
     def self_update
       
     end
 
+    # Setup essential files for the server.
+    def setup
+      `sudo rm /etc/network/if-up.d/init_welcome_msg`
+      `sudo ln -s /home/#{@user}/haji/helpers/init_welcome_msg.sh /etc/network/if-up.d/init_welcome_msg`
+
+      `sudo rm /usr/bin/haji`
+      `sudo ln -s /home/#{@user}/haji/haji.rb /usr/bin/haji`
+
+      `rm /home/#{@user}/.zshrc`
+      `ln -s /home/#{@user}/haji/helpers/zshrc.sh /home/#{@user}/.zshrc`
+
+      `rm /home/#{@user}/.gitconfig`
+      `ln -s /home/#{@user}/haji/helpers/.gitconfig /home/#{@user}/.gitconfig`
+    end
+
     private
-    
+   
+    # Auto get the comments of each function.
     def metod_reflect m
       if not defined? @@code_lines
         @@code_lines = IO.readlines __FILE__
@@ -118,7 +136,7 @@ module Ys
       m = method(m)
       ret = ''
       ret += @@code_lines[m.source_location[1] - 1].gsub('def ', '')
-      ret += @@code_lines[m.source_location[1] - 2] + "\n"
+      ret += @@code_lines[m.source_location[1] - 2]
       ret
     end
 
