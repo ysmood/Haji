@@ -1,0 +1,284 @@
+<html>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="author" content="y.s." />
+
+  <style type="text/css">
+    body { font-size: 14px; background: #eee; padding-bottom: 800px; padding: 10px }
+    h1 { font-size: 30px; color: #248; }
+    h2 { font-size: 24px; }
+    h3 { font-size: 18px; }
+    pre { color: #832BAC; }
+    hr { border-top: 1px dashed #fff; border-bottom: 1px dashed #C09053; }
+    table { font-size: 14px; border: 1px dashed #aaa; margin: 10px 0; }
+    table tr:first-child { text-align: right; }
+    .em { color: #E21010; }   /* emphasis */
+    .al { color: #C4259D; }   /* alert */
+    .pt { color: #2BAC45; }   /* point */
+    .grey { color: #777; }
+    .code { font-family:  monospace, Courier; }
+    .center { text-align: center; }
+
+    li {
+      padding: 3px 10px;
+      border-radius: 3px;
+      -webkit-transition: all 0.1s ease-out;
+
+      /* fix blinking bug */
+      -webkit-backface-visibility: hidden;
+      -webkit-perspective: 1000;
+    }
+    li:hover {
+      background: rgba(255, 255, 255, 0.5);
+      box-shadow: 1px 1px 3px #aaa;
+    }
+  </style>
+  <title>Haji - Ubuntu Server Documentation</title>
+<body>
+      
+  <h1>Haji - Ubuntu Server</h1>
+  <p class="grey">
+    This doc will explain some important features of the this server. It is recommended to use chrome to view this doc.
+    Check updates at here: <a target="_blank" href="https://docs.google.com/folder/d/0ByeHO2zf1ko2VkctOGRkMHJaQzA/edit">Google Drive</a>.
+  </p>
+
+  <ul>
+
+    <li>
+      <h2>About</h2>
+      <p>
+        Haji is base on Ubuntu server 12 and is intended to make the developers' life easier.
+        So all settings in Haji is <span class="al">not</span> for a product environment, 
+        and it is <span class="al">insecure</span> to directly connect it to the public network.
+      </p>
+      <p>
+        Although you can use the Virtual Box to play with this vm other than Vmware, 
+        but you should know some disadvantages of the Virtual Box:
+      </p>
+      <ul>
+        <li>You can't connect your vm directly through NAT mode, and Bridge mode can cause security problems.</li>
+        <li>
+          Only samba sharing is supported between host and guest. 
+          And if you want support for sharing from host directly, you need to setup Guest Addition manually.
+        </li>
+      </ul>
+    </li>
+
+    <li>
+      <h2>Development Out of the Box</h2>
+      <p>
+        There two available ways to sharing file system between the host and the vm. The Samba service from the vm,
+        or the Vmware based file sharing service. 
+      </p>
+      <ul>
+        <li>
+          The folder <span class="al code">/home/saya/cosmos/</span> enables you to visit the shared items from host.
+          Before using it, you should specify the folders you want to share in the vm settings.
+          This is useful when most testings of your project don't depend on the vm, 
+          and you want to save the cpu of your machine.
+        </li>
+        <li>
+          The home folder of Saya is shared via smb protocol.
+          Folder <span class="al code">/home/saya/</span> is visible from the host machine.
+          This allows you to take the most advantage of the system and gui tools that you are already familiar with.
+        </li>
+        <li>
+          It is recommended that using the <span class="al code">/home/saya/cradle/</span> 
+          as the place where the development starts.
+        </li>
+      </ul>
+    </li>
+
+    <li>
+      <h2>Access Database Server Remotely</h2>
+      <ul>
+        <li>
+          Usually database server is not directly accessible from outside the vm.
+        </li>
+        <li>
+          It is recommended that using the ssh tunnel to connect to the database.
+        </li>
+        <li>
+          Programs like Navicat supports to setup ssh tunnels in a gui way easily.
+        </li>
+        <li>
+          You can also create the ssh tunnel manually, and use any db admin tool you prefer. This article may give you a clue:
+          <a href="http://www.ibm.com/developerworks/data/library/techarticle/dm-0312lurie/" target="_blank">Tunneling Database Traffic with openSSH and Linux</a>
+        </li>
+      </ul>
+    </li>
+
+    <li>
+      <h2>Installed Programs</h2>
+      <p>
+        Only significant ones are listed here. For more details and usages about the programs, 
+        search the key words in the list on the web.
+      </p>
+      <p>
+        To optimize the performance, only few services are started automatically, 
+        but you can use <span class="al code">sudo sysv-rc-conf</span> to enable them 
+        (<a href="#mysql_auto_start">Mysql and Mongodb are not listed in sysv-rc-conf</a>).
+      </p>
+      <ul>
+        <li>
+          <h3>Zsh 5.0, Tmux 1.6</h3>
+          <p>
+            The default shell for root and saya.
+          </p>
+          <pre>zsh</pre>
+          Settings location:
+          <pre>~/.zshrc</pre>
+        </li>
+        <li>
+          <h3>p7zip, 7z, p7zip-rar</h3>
+          <pre>p7zip, 7z</pre>
+        </li>
+
+        <hr />
+
+        <li>
+          <h3>Ruby 1.9, RVM 1.16, Rails 3, Passenger 3</h3>
+          <p>
+            Use the rvm to manage the version ruby.
+          </p>
+          <pre>ruby, irb, rails, rvm</pre>
+        </li>
+        <li>
+          <h3>Python 2.7, pip 1.2</h3>
+          <pre>python, pip</pre>
+        </li>
+        <li>
+          <h3>Lua 5</h3>
+          <pre>lua</pre>
+        </li>
+        <li>
+          <h3>Node.js 0.8</h3>
+          <pre>node npm</pre>
+        </li>
+        <li>
+          <h3>Go 1.0</h3>
+          <pre>go</pre>
+        </li>
+        <li>
+          <h3>Php 5</h3>
+          <pre>php</pre>
+          Settings location:
+          <pre>/etc/php5/</pre>
+        </li>
+        <li>
+          <h3>Perl 5.14</h3>
+          <pre>perl</pre>
+        </li>
+
+        <hr />
+        
+        <li>
+          <h3>Git 1.9</h3>
+          <pre>git</pre>
+          Settings location:
+          <pre>~/.gitconfig</pre>
+          <p>
+            You might want to quick setup git account by command: <span class="al code">haji setup-git</span>
+          </p>
+        </li>
+        <li>
+          <h3>Svn 1.6</h3>
+          <pre>svn</pre>
+        </li>
+        <li>
+          <h3>Mercurial 2.0</h3>
+          <pre>hg</pre>
+        </li>
+
+        <hr />
+        
+        <li>
+          <h3>Mysql 5</h3>
+          To start/stop/restart the server:
+          <pre>sudo service mysql start/stop/restart</pre>
+          <table>
+            <tr>
+              <td>Admin : </td>
+              <td class="al code">root</td>
+            </tr>
+            <tr>
+              <td>Password : </td>
+              <td class="al code">root</td>
+            </tr>
+          </table>
+          ※ To enable auto startup, just remove the file <span id="mysql_auto_start" class="al code">/etc/init/mysql.override</span>.
+        </li>
+        <li>
+          <h3>Postgresql 9</h3>
+          To start/stop/restart the server:
+          <pre>sudo service postgresql start/stop/restart</pre>
+          <table>
+            <tr>
+              <td>Admin : </td>
+              <td class="al code">postgres</td>
+            </tr>
+            <tr>
+              <td>Password : </td>
+              <td class="al code">root</td>
+            </tr>
+          </table>
+        </li>
+        
+        <li>
+          <h3>MongoDB 2.0</h3>
+          To start/stop/restart the server:
+          <pre>sudo service mongodb start/stop/restart</pre>
+          ※ To enable auto startup, just remove the file /etc/init/mongodb.override.
+        </li>
+
+        <hr />
+        
+        <li>
+          <h3>Apache 2</h3>
+          <pre>apachectl a2dismod   a2dissite  a2enmod    a2ensite   a2p</pre>
+          To start/stop/restart the server:
+          <pre>sudo service apache2 start/stop/restart</pre>
+          Settings location:
+          <pre>/etc/apache2/</pre>
+          <p>
+            You may want to change the default document root of the server by this command:
+          </p>
+          <pre>haji set-www-dir</pre>
+        </li>
+        <li>
+          <h3>Nginx 1.1</h3>
+          To start/stop/restart the server:
+          <pre>sudo nginx</pre>
+          <pre>sudo nginx -s stop/reload</pre>
+          Settings location:
+          <pre>/etc/nginx/</pre>
+        </li>
+        <li>
+          <h3>Tomcat 6</h3>
+          To start/stop/restart the server:
+          <pre>sudo service tomcat6 start/stop/restart</pre>
+          Settings location:
+          <pre>/etc/tomcat6/</pre>
+        </li>
+        <li>
+          <h3>Samba 3.6</h3>
+          To start/stop/restart the server:
+          <pre>sudo service smbd start/stop/restart</pre>
+          Settings location:
+          <pre>/etc/samba/</pre>
+        </li>
+      </ul>
+    </li>
+
+  </ul>
+
+  <div class="center grey code">Oct 2012 ys</div>
+
+</body>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+<script type="text/javascript">
+  (function(){
+
+  })();
+</script>
+</html>
+
