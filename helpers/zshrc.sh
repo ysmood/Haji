@@ -44,6 +44,11 @@ source $ZSH/oh-my-zsh.sh
 
 ######################################### ys kit ###########################################
 
+# If Saya is sealed, run setup.
+if [ -f /home/saya/.sealed ]; then
+	haji setup	
+fi
+
 # Shrink the VM disk.
 alias ys-shrink='sudo vmware-toolbox-cmd disk shrinkonly'
 

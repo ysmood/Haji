@@ -1,9 +1,13 @@
 # This program is intended to help to speed up some common system level management tasks.
 # Nov 2012 ys
+require_relative "Data"
+
 module Haji
   class Helper
     def initialize(args)
-      @user = "saya"
+      @home = "/home/saya"
+
+      load_data
 
       args = args.map { |e| e = e.gsub '-', '_' }
 
@@ -26,7 +30,7 @@ module Haji
     def help
       ms = self.public_methods(false)
 
-      puts "This a helper to speed up basic system task of Haji server.\n\n"
+      puts "This a helper to speed up basic system task of Haji server #{@data.ver}.\n\n"
       puts 'SYNOPSIS'
       puts '    haji [options] [arguments]', ''
 
@@ -76,7 +80,7 @@ module Haji
         dir = $stdin.gets.chomp
       end
       dir = File.expand_path dir
-      `rm /home/#{@user}/cradle/www && ln -s '#{dir}' /home/#{@user}/cradle/www`
+      `rm #{@home}/cradle/www && ln -s '#{dir}' #{@home}/cradle/www`
     end
 
     # Clean the system temp files and history cache.
@@ -90,7 +94,7 @@ module Haji
         FileUtils.rm_rf(dir + f)
       }
 
-      dir = "/home/#{@user}/"
+      dir = "#{@home}/"
       list.each { |f|
         FileUtils.rm_rf(dir + f)
       }
@@ -106,23 +110,27 @@ module Haji
     end
 
     # Self update tool.
-    def self_update
+    def update
       
     end
 
     # Setup essential files for the server.
     def setup
       `sudo rm /etc/network/if-up.d/init_welcome_msg`
-      `sudo ln -s /home/#{@user}/haji/helpers/init_welcome_msg.sh /etc/network/if-up.d/init_welcome_msg`
+      `sudo ln -s #{@home}/haji/helpers/init_welcome_msg.sh /etc/network/if-up.d/init_welcome_msg`
 
       `sudo rm /usr/bin/haji`
-      `sudo ln -s /home/#{@user}/haji/haji.rb /usr/bin/haji`
+      `sudo ln -s #{@home}/haji/haji.rb /usr/bin/haji`
 
-      `rm /home/#{@user}/.zshrc`
-      `ln -s /home/#{@user}/haji/helpers/zshrc.sh /home/#{@user}/.zshrc`
+      `rm #{@home}/.zshrc`
+      `ln -s #{@home}/haji/helpers/zshrc.sh #{@home}/.zshrc`
 
-      `rm /home/#{@user}/.gitconfig`
-      `ln -s /home/#{@user}/haji/helpers/.gitconfig /home/#{@user}/.gitconfig`
+      `rm #{@home}/.gitconfig`
+      `ln -s #{@home}/haji/helpers/.gitconfig #{@home}/.gitconfig`
+
+      if File.exists? "#{@home}/.sealed"
+        File.rename("#{@home}/.sealed", "#{@home}/.unsealed")
+      end
     end
 
     private
@@ -138,6 +146,20 @@ module Haji
       ret += @@code_lines[m.source_location[1] - 1].gsub('def ', '')
       ret += @@code_lines[m.source_location[1] - 2]
       ret
+    end
+
+    def load_data
+      data_path = File.dirname(__FILE__) + '/data.db'
+      if not File.exists? data_path
+        @data = Data.new
+        File.open(data_path, "w") { |f|
+          Marshal.dump @data, f
+        }
+      else
+        File.open(data_path, "r") { |f|
+          @data = Marshal.load f
+        }
+      end
     end
 
   end
