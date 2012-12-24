@@ -6,7 +6,8 @@ module Haji
   class Helper
     def initialize(args)
       @home = "/home/saya"
-      @data_path = File.dirname(__FILE__) + '/data.db'
+      @helper_dir = File.dirname(__FILE__)
+      @data_path = @helper_dir + '/data.db'
 
       load_data
 
@@ -147,14 +148,14 @@ module Haji
     def update
       # Update helpers.
       `sudo rm /etc/network/if-up.d/init_welcome_msg`
-      `sudo ln -s #{@home}/haji/helpers/init_welcome_msg.sh /etc/network/if-up.d/init_welcome_msg`
+      `sudo ln -s #{@helper_dir}/init_welcome_msg.sh /etc/network/if-up.d/init_welcome_msg`
 
       `sudo rm /usr/bin/haji`
-      `sudo ln -s #{@home}/haji/haji.rb /usr/bin/haji`
+      `sudo ln -s #{File.dirname @helper_dir}/haji.rb /usr/bin/haji`
 
       # Copy some script.
-      `cp #{@home}/haji/helpers/zshrc.sh #{@home}/.zshrc`
-      `cp #{@home}/haji/helpers/.gitconfig #{@home}/.gitconfig`
+      `cp #{@helper_dir}/zshrc.sh #{@home}/.zshrc`
+      `cp #{@helper_dir}/.gitconfig #{@home}/.gitconfig`
 
       add_pub_key
       set_git @data.name, @data.email
