@@ -6,6 +6,7 @@ module Haji
   class Helper
     def initialize(args)
       @home = "/home/saya"
+      @data_path = File.dirname(__FILE__) + '/data.db'
 
       load_data
 
@@ -46,48 +47,81 @@ module Haji
 
     # Add a public key to the 'authorized_keys' file.
     def add_pub_key key = nil
+      puts "\n>> Add Public Key <<"
+
       if not key
         puts 'Input your public key: '
-        key = $stdin.gets
+        key = input
       end
 
-      path = File.join(File::SEPARATOR , Dir.home, '.ssh', 'authorized_keys')
-      File.open(path, 'a') do |f|
-        f.write(key)
+      if not key.empty?
+        path = File.join(File::SEPARATOR , Dir.home, '.ssh', 'authorized_keys')
+        File.open(path, 'a') do |f|
+          f.write(key)
+        end
+      else
+        puts 'Key not added.'
       end
     end
     
     # Help to setup the basic info of the git.
-    def setup_git name = nil, email = nil
-      if not name or not email
-        puts 'Git Setup'
-        
-        print 'Your name: '
-        name = $stdin.gets.chomp
+    def set_git name = nil, email = nil
+      puts "\n>> Git Setup <<"
 
-        print 'Your email: '
-        email = $stdin.gets.chomp
+      if not name
+        print 'Your name: '
+        name = input
       end
 
-      `git config --global user.name '#{name}'`
-      `git config --global user.email '#{email}'`
+      if not name.empty?
+        `git config --global user.name '#{name}'`
+        @data.name = name
+      else
+        puts 'Name not changed.'
+      end
+
+      if not email
+        print 'Your email: '
+        email = input
+      end
+
+      if not email.empty?
+        `git config --global user.email '#{email}'`
+        @data.email = email
+      else
+        puts 'Email not changed.'
+      end
+
+      save_data
     end
 
-    # Help to setup the apache2 default web directory.
+    # Help to setup the Apache default web directory.
     def set_www_dir dir = nil
+      puts "\n>> Apache Default directory Setup <<"
+
       if not dir
         print 'Input target directory: '
-        dir = $stdin.gets.chomp
+        dir = input
       end
-      dir = File.expand_path dir
-      `rm #{@home}/cradle/www && ln -s '#{dir}' #{@home}/cradle/www`
+
+      if not dir.empty?
+        dir = File.expand_path(dir)
+ 
+        if Dir.exists? dir
+          `rm #{@home}/cradle/www && ln -s '#{dir}' #{@home}/cradle/www`
+        else
+          puts "'#{dir}' doesn't exists!"
+        end
+      else
+        puts 'Dir not changed.'
+      end
     end
 
     # Clean the system temp files and history cache.
     def clean
       require 'fileutils'
 
-      list = ['.zsh_history', '.viminfo', '.lesshst', '.cache']
+      list = ['.zsh_history', '.viminfo', '.lesshst', '.cache', '.irb-history', '.mysql_history']
 
       dir = '/root/'
       list.each { |f|
@@ -111,22 +145,31 @@ module Haji
 
     # Self update tool.
     def update
-      
-    end
-
-    # Setup essential files for the server.
-    def setup
+      # Update helpers.
       `sudo rm /etc/network/if-up.d/init_welcome_msg`
       `sudo ln -s #{@home}/haji/helpers/init_welcome_msg.sh /etc/network/if-up.d/init_welcome_msg`
 
       `sudo rm /usr/bin/haji`
       `sudo ln -s #{@home}/haji/haji.rb /usr/bin/haji`
 
-      `rm #{@home}/.zshrc`
-      `ln -s #{@home}/haji/helpers/zshrc.sh #{@home}/.zshrc`
+      # Copy some script.
+      `cp #{@home}/haji/helpers/zshrc.sh #{@home}/.zshrc`
+      `cp #{@home}/haji/helpers/.gitconfig #{@home}/.gitconfig`
 
-      `rm #{@home}/.gitconfig`
-      `ln -s #{@home}/haji/helpers/.gitconfig #{@home}/.gitconfig`
+      add_pub_key
+      set_git @data.name, @data.email
+      set_www_dir
+    end
+
+    # Setup essential files for the server.
+    def setup
+      add_pub_key
+      set_git
+      set_www_dir
+      
+      if not File.exists? "#{@home}/.bashrc"
+        `touch #{@home}/.bashrc`
+      end
 
       if File.exists? "#{@home}/.sealed"
         File.rename("#{@home}/.sealed", "#{@home}/.unsealed")
@@ -134,6 +177,10 @@ module Haji
     end
 
     private
+
+    def input
+      return $stdin.gets.chomp
+    end
    
     # Auto get the comments of each function.
     def metod_reflect m
@@ -149,17 +196,19 @@ module Haji
     end
 
     def load_data
-      data_path = File.dirname(__FILE__) + '/data.db'
-      if not File.exists? data_path
+      if not File.exists? @data_path
         @data = Data.new
-        File.open(data_path, "w") { |f|
-          Marshal.dump @data, f
-        }
       else
-        File.open(data_path, "r") { |f|
+        File.open(@data_path, "r") { |f|
           @data = Marshal.load f
         }
       end
+    end
+
+    def save_data
+      File.open(@data_path, "w") { |f|
+        Marshal.dump @data, f
+      }
     end
 
   end

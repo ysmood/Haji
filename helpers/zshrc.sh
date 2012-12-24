@@ -32,7 +32,7 @@ ZSH_THEME="ys"
 plugins=(zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
-
+source .bashrc
 
 
 
@@ -98,4 +98,3 @@ alias du='du -khs'
 
 # Cradle folder
 alias cradle='cd /home/saya/cradle'
-

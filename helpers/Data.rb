@@ -8,7 +8,10 @@ module Haji
       end
     end
     
-    attr_accessor :ver
+    attr_accessor \
+      :ver,
+      :name,
+      :email
     
   end
 end
