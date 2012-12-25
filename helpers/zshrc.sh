@@ -88,7 +88,8 @@ alias ys-tug='tar -zxvf'
 ########################################## ALIAS ###########################################
 
 # Common bash commands.
-alias le='less -R'
+alias le='/usr/share/vim/vim73/macros/less.sh'
+alias less='le'
 alias ll='ls -laFh'
 alias cls='clear'
 alias ps='ps -ef'
