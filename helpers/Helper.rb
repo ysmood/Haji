@@ -171,6 +171,9 @@ module Haji
       if not File.exists? "#{@home}/.bashrc"
         `touch #{@home}/.bashrc`
       end
+      if not File.exists? "/root/.bashrc"
+        `ln -s #{@home}/.bashrc /root/.bashrc`
+      end
 
       if File.exists? "#{@home}/.sealed"
         File.rename("#{@home}/.sealed", "#{@home}/.unsealed")
