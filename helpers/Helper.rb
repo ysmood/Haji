@@ -28,7 +28,7 @@ module Haji
       end
     end
 
-    # Display help info.
+    # Display help info. Use 'haji help | le'.
     def help
       ms = self.public_methods(false)
 
@@ -122,7 +122,13 @@ module Haji
     def clean
       require 'fileutils'
 
-      list = ['.zsh_history', '.viminfo', '.lesshst', '.cache', '.irb-history', '.mysql_history']
+      list = [
+        '.zsh_history',
+        '.viminfo',
+        '.lesshst',
+        '.cache',
+        '.irb-history',
+        '.mysql_history']
 
       dir = '/root/'
       list.each { |f|
@@ -146,6 +152,8 @@ module Haji
 
     # Self update tool.
     def update
+      # TODO: git://github.com/ysmood/Haji.git
+
       # Update helpers.
       `sudo rm /etc/network/if-up.d/init_welcome_msg`
       `sudo ln -s #{@helper_dir}/init_welcome_msg.sh /etc/network/if-up.d/init_welcome_msg`
@@ -195,7 +203,7 @@ module Haji
       m = method(m)
       ret = ''
       ret += @@code_lines[m.source_location[1] - 1].gsub('def ', '')
-      ret += @@code_lines[m.source_location[1] - 2]
+      ret += '    ' + @@code_lines[m.source_location[1] - 2].gsub('# ', '')
       ret
     end
 
