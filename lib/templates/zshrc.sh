@@ -45,6 +45,7 @@ source $ZSH/oh-my-zsh.sh
 
 # If Saya is sealed, run setup.
 if [ -f /home/saya/.sealed ]; then
+	echo 'This is the first time you logged in, please follow the Haji setup guide.'
 	haji setup	
 fi
 
