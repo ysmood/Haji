@@ -184,7 +184,7 @@ module Haji
         `touch #{@home}/.bashrc`
       end
       if not File.exists? "/root/.bashrc"
-        `ln -s #{@home}/.bashrc /root/.bashrc`
+        `sudo ln -s #{@home}/.bashrc /root/.bashrc`
       end
 
       if File.exists? "#{@home}/.sealed"
