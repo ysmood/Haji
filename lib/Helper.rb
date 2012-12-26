@@ -1,5 +1,7 @@
 # This program is intended to help to speed up some common system level management tasks.
 # Nov 2012 ys
+
+require "erb"
 require_relative "Data"
 
 module Haji
@@ -7,6 +9,7 @@ module Haji
     def initialize(args)
       @home = "/home/saya"
       @helper_dir = File.dirname(__FILE__)
+      @templates_dir = @helper_dir + '/templates'
       @data_path = @helper_dir + '/data.db'
 
       load_data
@@ -32,7 +35,7 @@ module Haji
     def help
       ms = self.public_methods(false)
 
-      puts "This a helper to speed up basic system task of Haji server #{@data.ver}.\n\n"
+      puts "This a helper to speed up basic system task of Haji server.\n\n"
       puts 'SYNOPSIS'
       puts '    haji [options] [arguments]', ''
 
@@ -153,17 +156,19 @@ module Haji
     # Self update tool.
     def update
       # TODO: git://github.com/ysmood/Haji.git
+      
+      make_scripts
 
       # Update helpers.
-      `sudo rm /etc/network/if-up.d/init_welcome_msg`
-      `sudo ln -s #{@helper_dir}/init_welcome_msg.sh /etc/network/if-up.d/init_welcome_msg`
-
       `sudo rm /usr/bin/haji`
       `sudo ln -s #{File.dirname @helper_dir}/haji.rb /usr/bin/haji`
 
+      `sudo cp #{@templates_dir}/welcome_msg.tmp /etc/network/if-up.d/welcome_msg`
+      `sudo chmod a+x /etc/network/if-up.d/welcome_msg`
+
       # Copy some script.
-      `cp #{@helper_dir}/zshrc.sh #{@home}/.zshrc`
-      `cp #{@helper_dir}/.gitconfig #{@home}/.gitconfig`
+      `cp #{@templates_dir}/zshrc.sh #{@home}/.zshrc`
+      `cp #{@templates_dir}/.gitconfig #{@home}/.gitconfig`
 
       add_pub_key
       set_git @data.name, @data.email
@@ -192,6 +197,15 @@ module Haji
 
     def input
       return $stdin.gets.chomp
+    end
+
+    def make_scripts
+      Dir.glob(@templates_dir + '/*.erb.*') { |file|
+        src = File.read file
+        erb = ERB.new src
+        compiled = erb.result binding
+        File.open(file.sub(/\.erb.*/, '.tmp'), "w") { |f| f.write compiled }
+      }
     end
    
     # Auto get the comments of each function.

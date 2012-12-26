@@ -1,9 +1,6 @@
 #!/bin/sh
 # Oct 2012 ys
 
-# Haji Version
-ver=0.8
-
 if [ "$METHOD" = loopback ]; then
     exit 0
 fi
@@ -18,7 +15,7 @@ ip=`/sbin/ifconfig | grep "inet addr" | grep -v "127.0.0.1" | awk '{ print $2 }'
 bs='\\\\'
 
 echo "\
-Ubuntu 12.04.1 LTS haji $ver, Oct 2012 ys
+Ubuntu 12.04.1 LTS haji <%= @data.version %>, Oct 2012 ys
 
 ************************ IP ***************************
 IPv4: $ip

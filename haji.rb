@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require_relative 'helpers/Helper'
+require_relative 'lib/Helper'
 
 begin
   Haji::Helper.new ARGV
