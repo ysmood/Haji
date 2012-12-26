@@ -169,9 +169,7 @@ module Haji
       `cp #{@templates_dir}/zshrc.sh #{@home}/.zshrc`
       `cp #{@templates_dir}/.gitconfig #{@home}/.gitconfig`
 
-      add_pub_key
       set_git @data.name, @data.email
-      set_www_dir
     end
 
     # Setup essential files for the server.
