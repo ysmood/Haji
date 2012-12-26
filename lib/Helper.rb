@@ -170,6 +170,8 @@ module Haji
       `cp #{@templates_dir}/.gitconfig #{@home}/.gitconfig`
 
       set_git @data.name, @data.email
+
+      puts 'Update Complete.'
     end
 
     # Setup essential files for the server.
