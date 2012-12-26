@@ -7,11 +7,7 @@ require_relative "Data"
 module Haji
   class Helper
     def initialize(args)
-      @home = "/home/saya"
-      @helper_dir = File.dirname(__FILE__)
-      @templates_dir = @helper_dir + '/templates'
-      @data_path = @helper_dir + '/data.db'
-
+      init_dirs
       load_data
 
       args = args.map { |e| e = e.gsub '-', '_' }
@@ -155,13 +151,16 @@ module Haji
 
     # Self update tool.
     def update
-      # TODO: git://github.com/ysmood/Haji.git
+      # Update from Github.
+      `cd #{@repo_dir}
+        git fetch --all
+        git reset --hard origin/master`
       
       make_scripts
 
       # Update helpers.
       `sudo rm /usr/bin/haji`
-      `sudo ln -s #{File.dirname @helper_dir}/haji.rb /usr/bin/haji`
+      `sudo ln -s #{@repo_dir}/haji.rb /usr/bin/haji`
 
       `sudo cp #{@templates_dir}/welcome_msg.tmp /etc/network/if-up.d/welcome_msg`
       `sudo chmod a+x /etc/network/if-up.d/welcome_msg`
@@ -194,6 +193,14 @@ module Haji
     end
 
     private
+
+    def init_dirs
+      @home = "/home/saya"
+      @helper_dir = File.dirname __FILE__
+      @templates_dir = @helper_dir + '/templates'
+      @data_path = @helper_dir + '/data.db'
+      @repo_dir = File.dirname @helper_dir
+    end
 
     def input
       return $stdin.gets.chomp
