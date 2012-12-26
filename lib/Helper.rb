@@ -50,7 +50,7 @@ module Haji
       puts "\n>> Add Public Key <<"
 
       if not key
-        puts 'Input your public key: '
+        puts 'Input your public key for none pasaaword login: '
         key = input
       end
 
@@ -150,11 +150,13 @@ module Haji
     end
 
     # Self update tool.
-    def update
-      # Update from Github.
-      `cd #{@repo_dir}
-        git fetch --all
-        git reset --hard origin/master`
+    def update remote = 'r'
+      # Update from Github.com.
+      if remote == 'r'
+        `cd #{@repo_dir}
+          git fetch --all
+          git reset --hard origin/master`
+      end
       
       make_scripts
 
@@ -182,8 +184,7 @@ module Haji
       
       if not File.exists? "#{@home}/.bashrc"
         `touch #{@home}/.bashrc`
-      end
-      if not File.exists? "/root/.bashrc"
+        `sudo rm /root/.bashrc`
         `sudo ln -s #{@home}/.bashrc /root/.bashrc`
       end
 
