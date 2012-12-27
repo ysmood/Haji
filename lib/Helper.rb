@@ -184,7 +184,7 @@ module Haji
     private
 
     def init_paths
-      @home = "/home/saya"
+      @home = File.expand_path '~'
       @helper_dir = File.dirname __FILE__
       @templates_dir = @helper_dir + '/templates'
       @data_path = @helper_dir + '/data.db'
