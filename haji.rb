@@ -1,9 +1,16 @@
 #!/usr/bin/env ruby
+# The app entrance of Haji helper.
+# Nov 2012 ys
 
 require_relative 'lib/Helper'
 
-begin
-  Haji::Helper.new ARGV
-rescue Exception => e
-  puts "\n\nInterupted!"
+module Haji
+  
+  begin
+    Helper.new ARGV
+  rescue Exception => e
+    puts e
+    puts "\nInterupted!"
+  end
+
 end

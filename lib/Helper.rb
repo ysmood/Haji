@@ -5,31 +5,51 @@ require "erb"
 require_relative "Data"
 
 module Haji
+
   class Helper
+
     def initialize(args)
       init_paths
       load_data
 
       args = args.map { |e| e = e.gsub '-', '_' }
 
+      if File.exists? "#{@home}/Plugin.rb"
+        require "#{@home}/Plugin"
+        extend Plugin
+      end
+
       case args.length
       when 0
-        puts 'You should at least give one command.', ''
-        help
+        puts 'You should at least give one action.', '',
+             'For more help, input: haji help', ''
+        help nil
       when 1
-        self.send args[0]
+        begin
+          self.send args[0]
+        rescue NoMethodError => e
+          puts e
+        end
       else
         begin
           self.send args[0], *args[1 .. -1]
-        rescue Exception => e
+        rescue NoMethodError => e
           puts e
         end
       end
     end
 
     # Display help info.
-    def help
-      system "less #{@help_path}"
+    def help read = :less
+      make_help
+
+      if read == nil
+        ms = self.public_methods(false)
+        puts 'ACTIONS'
+        ms.each { |m| puts "    " + m.to_s.gsub('_', '-') }
+      else
+        system "#{read} #{@help_path}"
+      end
     end
 
     # Add a public key to the 'authorized_keys' file.
@@ -137,15 +157,14 @@ module Haji
     end
 
     # Self update tool.
-    def update remote = 'r'
+    def update remote = :r
       # Update from Github.com.
-      if remote == 'r'
+      if remote == :r
         system "cd #{@repo_dir}
           git fetch --all
           git reset --hard origin/master"
       end
       
-      make_help
       make_scripts
 
       # Update helpers.
@@ -169,6 +188,8 @@ module Haji
       add_pub_key
       set_git
       set_www_dir
+
+      puts "\nCreate essential files..."
       
       if not File.exists? "#{@home}/.bashrc"
         `touch #{@home}/.bashrc`
@@ -176,15 +197,22 @@ module Haji
         `sudo ln -s #{@home}/.bashrc /root/.bashrc`
       end
 
+      if not File.exists? "#{@home}/Plugin.rb"
+        `cp #{@templates_dir}/Plugin.rb #{@home}/Plugin.rb`
+        `sudo ln -s #{@templates_dir}/Plugin.rb /root/Plugin.rb`
+      end
+
       if File.exists? "#{@home}/.sealed"
         File.rename("#{@home}/.sealed", "#{@home}/.unsealed")
       end
+
+      puts "\nSetup complete."
     end
 
     private
 
     def init_paths
-      @home = File.expand_path '~'
+      @home = '/home/saya'
       @helper_dir = File.dirname __FILE__
       @templates_dir = @helper_dir + '/templates'
       @data_path = @helper_dir + '/data.db'
@@ -202,9 +230,9 @@ module Haji
       File.open(@help_path, "w") { |f|
         f.puts "This a helper to speed up basic system task of Haji server.\n\n"
         f.puts 'SYNOPSIS'
-        f.puts '    haji [options] [arguments]', ''
+        f.puts '    haji [actions] [arguments...]', ''
 
-        f.puts 'OPTIONS'
+        f.puts 'ACTIONS'
         ms.each { |m| f.puts "    " + m.to_s.gsub('_', '-') }
         f.puts
 
@@ -226,14 +254,19 @@ module Haji
    
     # Auto get the comments of each function.
     def metod_reflect m
-      if not defined? @@code_lines
-        @@code_lines = IO.readlines __FILE__
+      m = method(m)
+      location = m.source_location
+      
+      if not defined? @@code_num or
+        @@code_num != location[0]
+      then
+        @@code_num = location[0]
+        @@code_lines = File.readlines location[0]
       end
 
-      m = method(m)
       ret = ''
-      ret += @@code_lines[m.source_location[1] - 1].gsub('def ', '')
-      ret += '    ' + @@code_lines[m.source_location[1] - 2].gsub('# ', '')
+      ret += @@code_lines[location[1] - 1].gsub('def ', '')
+      ret += '    ' + @@code_lines[location[1] - 2].gsub('# ', '')
       ret
     end
 
@@ -253,5 +286,20 @@ module Haji
       }
     end
 
+    def read_line(filename, number)
+      counter = 0
+      line = nil
+      File.foreach(filename) do |l|
+        counter += 1
+        if counter == number
+          line = l.chomp
+          break
+        end
+      end
+      line = nil if counter != number
+      line
+    end
+
   end
+
 end
