@@ -7,7 +7,7 @@ require_relative "Data"
 module Haji
   class Helper
     def initialize(args)
-      init_dirs
+      init_paths
       load_data
 
       args = args.map { |e| e = e.gsub '-', '_' }
@@ -27,22 +27,9 @@ module Haji
       end
     end
 
-    # Display help info. Use 'haji help | le'.
+    # Display help info.
     def help
-      ms = self.public_methods(false)
-
-      puts "This a helper to speed up basic system task of Haji server.\n\n"
-      puts 'SYNOPSIS'
-      puts '    haji [options] [arguments]', ''
-
-      puts 'OPTIONS'
-      ms.each { |m| puts "    " + m.to_s.gsub('_', '-') }
-      puts
-
-      puts 'DETAILS'
-      ms.each { |m| puts metod_reflect(m), '' }
-
-      puts "For more detail, please see the source code of file '#{__FILE__}'."
+      system "less #{@help_path}"
     end
 
     # Add a public key to the 'authorized_keys' file.
@@ -153,11 +140,12 @@ module Haji
     def update remote = 'r'
       # Update from Github.com.
       if remote == 'r'
-        `cd #{@repo_dir}
+        system "cd #{@repo_dir}
           git fetch --all
-          git reset --hard origin/master`
+          git reset --hard origin/master"
       end
       
+      make_help
       make_scripts
 
       # Update helpers.
@@ -195,16 +183,36 @@ module Haji
 
     private
 
-    def init_dirs
+    def init_paths
       @home = "/home/saya"
       @helper_dir = File.dirname __FILE__
       @templates_dir = @helper_dir + '/templates'
       @data_path = @helper_dir + '/data.db'
       @repo_dir = File.dirname @helper_dir
+      @help_path = @helper_dir + '/help.tmp'
     end
 
     def input
       return $stdin.gets.chomp
+    end
+
+    def make_help
+      ms = self.public_methods(false)
+
+      File.open(@help_path, "w") { |f|
+        f.puts "This a helper to speed up basic system task of Haji server.\n\n"
+        f.puts 'SYNOPSIS'
+        f.puts '    haji [options] [arguments]', ''
+
+        f.puts 'OPTIONS'
+        ms.each { |m| f.puts "    " + m.to_s.gsub('_', '-') }
+        f.puts
+
+        f.puts 'DETAILS'
+        ms.each { |m| f.puts metod_reflect(m), '' }
+
+        f.puts "For more detail, please see the source code of file '#{__FILE__}'."
+      }
     end
 
     def make_scripts
