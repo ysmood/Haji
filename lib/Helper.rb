@@ -22,17 +22,16 @@ module Haji
       case args.length
       when 0
         puts 'You should at least give one action.', '',
-             'For more help, input: haji help', ''
-        help nil
+             'For more help, input: haji help'
       when 1
         begin
-          self.send args[0]
+          self.send args[0].sub(/^(_+)/, '')
         rescue NoMethodError => e
           puts e
         end
       else
         begin
-          self.send args[0], *args[1 .. -1]
+          self.send args[0].sub(/^(_+)/, ''), *args[1 .. -1]
         rescue NoMethodError => e
           puts e
         end
@@ -40,16 +39,9 @@ module Haji
     end
 
     # Display help info.
-    def help read = :less
+    def help
       make_help
-
-      if read == nil
-        ms = self.public_methods(false)
-        puts 'ACTIONS'
-        ms.each { |m| puts "    " + m.to_s.gsub('_', '-') }
-      else
-        system "#{read} #{@help_path}"
-      end
+      system "less #{@help_path}"
     end
 
     # Add a public key to the 'authorized_keys' file.
@@ -165,6 +157,7 @@ module Haji
           git reset --hard origin/master"
       end
       
+      make_help
       make_scripts
 
       # Update helpers.
@@ -177,6 +170,11 @@ module Haji
       # Copy some script.
       `cp #{@templates_dir}/zshrc.sh #{@home}/.zshrc`
       `cp #{@templates_dir}/.gitconfig #{@home}/.gitconfig`
+
+      if not Dir.exists? "#{@home}/.oh-my-zsh/completions"
+        Dir.mkdir "#{@home}/.oh-my-zsh/completions"
+      end
+      `cp #{@templates_dir}/zsh_completion.tmp #{@home}/.oh-my-zsh/completions/_haji`
 
       set_git @data.name, @data.email
 
@@ -227,17 +225,20 @@ module Haji
     def make_help
       ms = self.public_methods(false)
 
+      @@methods_info = []
+
       File.open(@help_path, "w") { |f|
         f.puts "This a helper to speed up basic system task of Haji server.\n\n"
         f.puts 'SYNOPSIS'
-        f.puts '    haji [actions] [arguments...]', ''
-
-        f.puts 'ACTIONS'
-        ms.each { |m| f.puts "    " + m.to_s.gsub('_', '-') }
-        f.puts
+        f.puts ' ' * 4 + 'haji [actions] [arguments...]', ''
 
         f.puts 'DETAILS'
-        ms.each { |m| f.puts metod_reflect(m), '' }
+        ms.each { |m|
+          info = metod_reflect(m)
+          f.puts ' ' * 4 + info[0],
+                 ' ' * 8 + info[1], ''
+          @@methods_info.push info
+        }
 
         f.puts "For more detail, please see the source code of file '#{__FILE__}'."
       }
@@ -264,10 +265,8 @@ module Haji
         @@code_lines = File.readlines location[0]
       end
 
-      ret = ''
-      ret += @@code_lines[location[1] - 1].gsub('def ', '')
-      ret += '    ' + @@code_lines[location[1] - 2].gsub('# ', '')
-      ret
+      return @@code_lines[location[1] - 1].sub(/\s+def\s+/, '').gsub('_', '-'),
+             @@code_lines[location[1] - 2].sub(/\s+#\s+/, '')
     end
 
     def load_data

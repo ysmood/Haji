@@ -1,4 +1,6 @@
 # Define your new commands in here.
+# Nov 2012 ys
+
 module Haji
 
   module Plugin
