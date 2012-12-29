@@ -7,4 +7,4 @@
 	}
 %>
 
-_arguments "1: :(<%= list %>)"
+_arguments '1: :(<%= list %>)' '*:file or directory:_files'
