@@ -178,7 +178,7 @@ module Haji
 
       set_git @data.name, @data.email
 
-      puts 'Update Complete.'
+      puts "\nUpdate Complete."
     end
 
     # Setup essential files for the server.
