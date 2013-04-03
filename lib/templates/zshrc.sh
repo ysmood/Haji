@@ -1,3 +1,15 @@
+
+# Setip Guide. If Saya is sealed, run setup.
+if [ -f /home/saya/.sealed ]; then
+	clear
+	echo 'This is the first time you logged in, please follow the Haji setup guide. Press Enter to skip.'
+	haji setup
+fi
+
+
+
+######################################## Oh My Zsh ##########################################
+
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
 
@@ -29,26 +41,13 @@ ZSH_THEME="ys"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(zsh-syntax-highlighting)
+plugins=(git zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
 
 
-
-
-
-
-
-
 ######################################### ys kit ###########################################
-
-# If Saya is sealed, run setup.
-if [ -f /home/saya/.sealed ]; then
-	clear
-	echo 'This is the first time you logged in, please follow the Haji setup guide.'
-	haji setup	
-fi
 
 # Shrink the VM disk.
 alias ys-shrink='sudo vmware-toolbox-cmd disk shrinkonly'
@@ -78,14 +77,6 @@ alias ys-tug='tar -zxvf'
 
 
 
-
-
-
-
-
-
-
-
 ########################################## ALIAS ###########################################
 
 # Common bash commands.
@@ -100,10 +91,6 @@ alias du='du -khs'
 
 # Cradle folder
 alias cradle='cd /home/saya/cradle'
-
-
-
-
 
 
 
