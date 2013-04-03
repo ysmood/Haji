@@ -105,8 +105,7 @@ module Haji
 
       if not dir.empty?
         dir = File.expand_path(dir)
- 
-        if Dir.exists? dir
+        if File.exists? dir
           `rm #{@home}/cradle/www && ln -s '#{dir}' #{@home}/cradle/www`
         else
           puts "'#{dir}' doesn't exists!"
@@ -171,7 +170,7 @@ module Haji
       `cp #{@templates_dir}/zshrc.sh #{@home}/.zshrc`
       `cp #{@templates_dir}/.gitconfig #{@home}/.gitconfig`
 
-      if not Dir.exists? "#{@home}/.oh-my-zsh/completions"
+      if not File.exists? "#{@home}/.oh-my-zsh/completions"
         Dir.mkdir "#{@home}/.oh-my-zsh/completions"
       end
       `cp #{@templates_dir}/zsh_completion.tmp #{@home}/.oh-my-zsh/completions/_haji`
