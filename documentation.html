@@ -1,6 +1,6 @@
 <html>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <meta name="author" content="y.s." />
+  <link rel="icon" href="http://ysmood.org/favicon.ico" />
 
   <style type="text/css">
     body { font-size: 14px; background: #eee; padding-bottom: 800px; padding: 10px }
@@ -22,6 +22,10 @@
       padding: 3px 10px;
       border-radius: 3px;
       -webkit-transition: all 0.1s ease-out;
+      -moz-transition: all 0.1s ease-out;
+      -o-transition: all 0.1s ease-out;
+      -ms-transition: all 0.1s ease-out;
+      transition: all 0.1s ease-out;
 
       /* fix blinking bug */
       -webkit-backface-visibility: hidden;
@@ -37,8 +41,9 @@
       
   <h1>Haji - Ubuntu Server</h1>
   <p class="grey">
-    This doc will explain some important features of the this server. It is recommended to use chrome to view this doc.
-    Check updates at here: <a target="_blank" href="https://docs.google.com/folder/d/0ByeHO2zf1ko2VkctOGRkMHJaQzA/edit">Google Drive</a>.
+    This doc will explain some basic features of the this virtual machine.
+    Check updates at here: <a target="_blank" href="http://goo.gl/ZZlnp">Google Drive</a>.
+    If you have any question, you can find me <a href="http://ysmood.org">here</a>. 
   </p>
 
   <ul>
@@ -47,7 +52,7 @@
       <h2>About</h2>
       <p>
         Haji is base on Ubuntu server 12 and is intended to make the developers' life easier.
-        So all settings in Haji is <span class="al">not</span> for a product environment, 
+        Therefore all settings in Haji is <span class="al">not</span> for a product environment, 
         and it is <span class="al">insecure</span> to directly connect it to the public network.
       </p>
       <p>
@@ -90,6 +95,9 @@
 
     <li>
       <h2>Access Database Server Remotely</h2>
+      <p>
+        The easiest way to 
+      </p>
       <ul>
         <li>
           Usually database server is not directly accessible from outside the vm.
@@ -102,13 +110,13 @@
         </li>
         <li>
           You can also create the ssh tunnel manually, and use any db admin tool you prefer. This article may give you a clue:
-          <a href="http://www.ibm.com/developerworks/data/library/techarticle/dm-0312lurie/" target="_blank">Tunneling Database Traffic with openSSH and Linux</a>
+          <a href="http://www.ibm.com/developerworks/data/library/techarticle/dm-0312lurie/" target="_blank">Tunneling Database Traffic with openSSH and Linux</a>.
         </li>
       </ul>
     </li>
 
     <li>
-      <h2>Installed Programs</h2>
+      <h2>Installed Programs List</h2>
       <p>
         Only significant ones are listed here. For more details and usages about the programs, 
         search the key words in the list on the web.
@@ -125,9 +133,9 @@
           <pre>haji</pre>
         </li>        
         <li>
-          <h3>Zsh 5.0, Tmux 1.6</h3>
+          <h3>Zsh 5.0, Tmux 1.6, oh-my-zsh</h3>
           <p>
-            The default shell for root and saya.
+            The default shell for root and saya. Also with some handy tools for terminal based development.
           </p>
           <pre>zsh</pre>
           Settings location:
@@ -157,7 +165,7 @@
           <pre>lua</pre>
         </li>
         <li>
-          <h3>Node.js 0.8</h3>
+          <h3>Nodejs 0.8</h3>
           <pre>node npm</pre>
         </li>
         <li>
