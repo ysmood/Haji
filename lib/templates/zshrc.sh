@@ -43,7 +43,7 @@ ZSH_THEME="ys"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 plugins=(git zsh-syntax-highlighting)
 
-source $ZSH/oh-my-zsh.sh
+source "$ZSH/oh-my-zsh.sh"
 
 
 
@@ -95,4 +95,4 @@ alias cradle='cd /home/saya/cradle'
 
 
 ########################################## USER ############################################
-source .bashrc
+source "$HOME/.bashrc"
