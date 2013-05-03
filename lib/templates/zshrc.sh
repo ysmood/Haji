@@ -84,7 +84,7 @@ alias le='/usr/share/vim/vim73/macros/less.sh'
 alias less='le'
 alias ll='ls -laFh'
 alias cls='clear'
-alias ps='ps -ef'
+alias ps='ps -aux --sort -rss'
 
 # Disk usage
 alias du='du -khs'
