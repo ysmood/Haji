@@ -169,9 +169,6 @@ module Haji
       # Copy some script.
       `cp #{@templates_dir}/zshrc.sh #{@home}/.zshrc`
       `cp #{@templates_dir}/.gitconfig #{@home}/.gitconfig`
-      
-      # Reload the zsh settings.
-      `source #{@home}/.zshrc`
 
       if not File.exists? "#{@home}/.oh-my-zsh/completions"
         Dir.mkdir "#{@home}/.oh-my-zsh/completions"
